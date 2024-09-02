@@ -4,7 +4,7 @@ import React from 'react'
 import {SignUp } from "@clerk/nextjs";
 import styled from 'styled-components';
 
-function page() {
+function Page() {
   return (
     <StyledSignUp>
       <SignUp />
@@ -17,4 +17,4 @@ const StyledSignUp = styled.div`
     margin: auto;
   }
 `; 
-export default page;
+export default Page;
