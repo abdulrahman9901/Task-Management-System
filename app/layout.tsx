@@ -15,6 +15,9 @@ const nunito = Nunito({weight:["400","500","600","700","800"], subsets: ["latin"
 export const metadata: Metadata = {
   title: "TaskMate",
   description: "Your Task Managment Companion",
+  icons: {
+    icon: "/task-management.png", // Replace with your custom icon path
+  },
 };
 
 export default function RootLayout({
@@ -30,12 +33,7 @@ export default function RootLayout({
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
           />
-          <link
-            rel="icon"
-            href="/task-management.png"
-            type="image/x-icon"
-            sizes="16x16"
-          />
+          <link rel="icon" href="/task-management.png" type="image/x-icon" />
         </head>
         <body className={nunito.className}>
           <NextTopLoader
