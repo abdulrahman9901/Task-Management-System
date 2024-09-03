@@ -26,6 +26,14 @@ const GlobalStyles = styled.div`
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1rem;
+
+      @media screen and (max-width: 480px) {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+
+      @media screen and (max-width: 390px) {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
   }
 `;
 

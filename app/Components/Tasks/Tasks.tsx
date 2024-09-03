@@ -6,8 +6,9 @@ import { useGlobalState } from '../../Context/globalProviders';
 import CreateTask from '../Modals/CreateTask';
 import TaskItem from '../Taskitem/TaskItem';
 import { Task } from '@prisma/client';
-import { moon, plus, sun } from '../../utils/icons';
+import { plus } from '../../utils/icons';
 import Modal from "../Modals/Modal";
+import EditTask from '../Modals/EditTask';
 
 
 interface props {
@@ -16,33 +17,20 @@ interface props {
 }
 
 function Tasks({ title, tasks }: props) {
-  const { theme ,setSelectedTheme,selectedTheme } = useGlobalState();
-  const {openModal, modal } = useGlobalState();
-
-  const toggleTheme = ()=>{
-    setSelectedTheme(selectedTheme == 0 ? 1 : 0);
-  }
+  const { theme  } = useGlobalState();
+  const { openModal, modal, editModal } = useGlobalState();
 
   return (
     <>
       <TaskStyles theme={theme}>
         <h1>{title}</h1>
 
-        {/* <header className="task-header">
-          <button
-            className="theme-toggle"
-            aria-label="Toggle Theme"
-            onClick={toggleTheme}
-          >
-            {selectedTheme == 0 ? sun : moon}
-          </button>
-        </header> */}
-        
         {modal && <Modal content={<CreateTask />} />}
+
+        {editModal && <Modal content={<EditTask />} />}
 
         <div className="tasks grid">
           {tasks.map((task: any) => {
-            console.log(task);
             return <TaskItem key={task.id} task={task} />;
           })}
           <button className="new-task" onClick={openModal}>

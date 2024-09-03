@@ -8,14 +8,20 @@ import formatDate from "@/app/utils/formatDate";
 import { Task } from "@/types/types";
 
 interface TaskItemProps {
-  task: Task; // Define the correct prop type
+  task: Task;
 }
 
 function TaskItem({ task }: TaskItemProps) {
-  const { theme, deleteTask, updateTask } = useGlobalState();
+  const { theme, deleteTask, updateTask, editModal, openEditModal } =
+    useGlobalState();
 
   const { id, title, description, date, isCompleted } = task;
 
+
+  const editBtn = () => {
+    console.log("to edit ",task)
+    openEditModal(task); 
+  };
   return (
     <TaskItemStyled key={id} theme={theme}>
       <h1>{title}</h1>
@@ -47,7 +53,9 @@ function TaskItem({ task }: TaskItemProps) {
             Incomplete
           </button>
         )}
-        <button className="edit">{edit}</button>
+        <button className="edit" onClick={editBtn}>
+          {edit}
+        </button>
         <button
           className="delete"
           onClick={() => {

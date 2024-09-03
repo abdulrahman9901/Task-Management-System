@@ -2,7 +2,7 @@
 import { useGlobalState } from "@/app/Context/globalProviders";
 import React from "react";
 import styled from "styled-components";
-
+import { close } from "@/app/utils/icons";
 interface Props {
   content: React.ReactNode;
 }
@@ -14,7 +14,12 @@ function Modal({ content }: Props) {
   return (
     <ModalStyled theme={theme}>
       <div className="modal-overlay" onClick={closeModal}></div>
-      <div className="modal-content">{content}</div>
+      <div className="modal-content">
+        <button onClick={closeModal} className="close-button">
+          {close}
+        </button>
+        {content}
+      </div>
     </ModalStyled>
   );
 }
@@ -31,6 +36,9 @@ const ModalStyled = styled.div`
   justify-content: center;
   align-items: center; /* Centers the modal content vertically and horizontally */
 
+  .close-button{
+    float:right
+  } 
   .modal-overlay {
     position: absolute;
     top: 0;

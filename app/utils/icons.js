@@ -2,6 +2,7 @@ export const bars = <i className="fa-solid fa-bars fa-beat"></i>;
 export const arrowLeft = <i className="fa-solid fa-arrow-left fa-beat"></i>;
 
 export const add = <i className="fa-solid fa-plus"></i>;
+export const close = <i class="fa-solid fa-x"></i>;
 export const moon = (
   <i className="fa-solid fa-moon" style={{ color: "black" }}></i>
 );
