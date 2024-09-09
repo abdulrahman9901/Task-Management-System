@@ -9,6 +9,7 @@ import {
 } from "@clerk/nextjs";
 import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
+import Footer from "./Components/Footer/Footer";
 
 const nunito = Nunito({weight:["400","500","600","700","800"], subsets: ["latin"] });
 

@@ -9,6 +9,7 @@ import { Task } from '@prisma/client';
 import { plus } from '../../utils/icons';
 import Modal from "../Modals/Modal";
 import EditTask from '../Modals/EditTask';
+import Footer from '../Footer/Footer';
 
 
 interface props {
@@ -22,7 +23,7 @@ function Tasks({ title, tasks }: props) {
 
   return (
     <>
-      <TaskStyles theme={theme}>
+      <TasksStyled theme={theme}>
         <h1>{title}</h1>
 
         {modal && <Modal content={<CreateTask />} />}
@@ -38,12 +39,13 @@ function Tasks({ title, tasks }: props) {
             Add New Task
           </button>
         </div>
-      </TaskStyles>
+      </TasksStyled>
     </>
   );
 }
 
-const TaskStyles = styled.main`
+
+const TasksStyled = styled.main`
   width: 100%;
   height: 100%;
   padding: 2rem;
@@ -100,7 +102,6 @@ const TaskStyles = styled.main`
 
   .new-task {
     display: flex;
-    display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
@@ -124,4 +125,5 @@ const TaskStyles = styled.main`
     }
   }
 `;
+
 export default Tasks

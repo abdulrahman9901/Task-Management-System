@@ -2,7 +2,7 @@
 
 import { useGlobalState } from "@/app/Context/globalProviders";
 import { edit, trash } from "@/app/utils/icons";
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import formatDate from "@/app/utils/formatDate";
 import { Task } from "@/types/types";
@@ -12,16 +12,16 @@ interface TaskItemProps {
 }
 
 function TaskItem({ task }: TaskItemProps) {
-  const { theme, deleteTask, updateTask, editModal, openEditModal } =
-    useGlobalState();
+  const { theme, deleteTask, updateTask, openEditModal, isGuestUser } = useGlobalState();
 
   const { id, title, description, date, isCompleted } = task;
 
-
   const editBtn = () => {
-    console.log("to edit ",task)
-    openEditModal(task); 
+    if (!isGuestUser) {
+      openEditModal(task);
+    }
   };
+
   return (
     <TaskItemStyled key={id} theme={theme}>
       <h1>{title}</h1>
@@ -32,11 +32,14 @@ function TaskItem({ task }: TaskItemProps) {
           <button
             className="isCompleted"
             onClick={() => {
-              updateTask({
-                id,
-                isCompleted: !isCompleted,
-              });
+              if (!isGuestUser) {
+                updateTask({
+                  id,
+                  isCompleted: !isCompleted,
+                });
+              }
             }}
+            disabled={isGuestUser}
           >
             Completed
           </button>
@@ -44,23 +47,29 @@ function TaskItem({ task }: TaskItemProps) {
           <button
             className="incomplete"
             onClick={() => {
-              updateTask({
-                id,
-                isCompleted: !isCompleted,
-              });
+              if (!isGuestUser) {
+                updateTask({
+                  id,
+                  isCompleted: !isCompleted,
+                });
+              }
             }}
+            disabled={isGuestUser}
           >
             Incomplete
           </button>
         )}
-        <button className="edit" onClick={editBtn}>
+        <button className="edit" onClick={editBtn} disabled={isGuestUser}>
           {edit}
         </button>
         <button
           className="delete"
           onClick={() => {
-            deleteTask(id);
+            if (!isGuestUser) {
+              deleteTask(id);
+            }
           }}
+          disabled={isGuestUser}
         >
           {trash}
         </button>

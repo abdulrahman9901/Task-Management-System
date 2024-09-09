@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import themes from '@/app/Context/themes'
+import type { Clerk } from "@clerk/types";
 
 export interface Task {
   id: string;
@@ -24,4 +25,10 @@ export interface GlobalUpdateContextType {
 
 export interface GlobalProviderProps {
   children: ReactNode;
+}
+
+declare global {
+  interface Window {
+    Clerk: Clerk;
+  }
 }

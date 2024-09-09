@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components';
 import { useGlobalState } from '@/app/Context/globalProviders';
 import Image from "next/image"
@@ -8,87 +8,107 @@ import menu from "@/app/utils/menu";
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import profileImage from '@/public/avatar.jpg'; 
-import { SignOutButton, UserButton, useUser } from "@clerk/nextjs";
+import { UserButton, useUser, useClerk } from "@clerk/nextjs";
 import { arrowLeft, bars, logout } from '@/app/utils/icons';
-  
+
 function Sidebar() {
   const { theme, collapsed, collapseMenu } = useGlobalState();
   const router = useRouter();
   const pathname = usePathname();
 
+  const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
 
-  const {user} = useUser();
-  console.log("user : ", user);
-  const { firstName, lastName, imageUrl } = user || {
-    firstName: "",
-    lastName: " ",
-    imageUrl : profileImage,
-  };
-  console.log("theme :  ", theme);  
+  const isGuestUser = user?.primaryEmailAddress?.emailAddress === "83cf646221@mailmaxy.one";
+
+  const displayName = isLoaded 
+    ? (isGuestUser ? "Guest User" : user?.fullName || "Guest User") 
+    : "Loading...";
+  const displayImage = user?.imageUrl || profileImage;
+
   const handleClick = (link: string) => {
-    if (link) router.push(link);
+    router.push(link);
   };
 
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    try {
+      await signOut();
+      // Immediately redirect to sign-in page
+      router.push('/sign-in');
+    } catch (error) {
+      console.error('Sign out error:', error);
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
+
+  if (!isLoaded || !user) {
+    return null; // Don't render the sidebar if there's no authenticated user
+  }
 
   return (
-    <SidebarStyles theme={theme} collapsed={collapsed}>
+    <SidebarStyled theme={theme} collapsed={collapsed}>
       <button className="toggle-nav" onClick={collapseMenu}>
         {collapsed ? bars : arrowLeft}
       </button>
       <div className="profile">
         <div className="profile-overlay"></div>
         <div className="image">
-          <Image width={70} height={70} src={imageUrl} alt="profile" />
+          <Image width={70} height={70} src={displayImage} alt="profile" />
         </div>
         <div className="user-btn absolute z-20 top-0 w-full h-full">
-          <UserButton />
+          <UserButton afterSignOutUrl="/sign-in" />
         </div>
         <h1 className="capitalize">
-          <span>{firstName}</span>
-          <span>{lastName}</span>
+          {displayName}
         </h1>
       </div>
       <ul className="nav-items">
-        {menu.map((item) => {
-          return (
-            <li
-              key={item.id}
-              className={`nav-item ${pathname === item.link ? "active" : ""}`}
-              onClick={() => {
-                pathname === item.link
-                  ? null
-                  : handleClick(item.link as string);
-              }}
-            >
-              {item.icon}
-              <Link href={item.link}>{item.title}</Link>
-            </li>
-          );
-        })}
+        {menu.map((item) => (
+          <li
+            key={item.id}
+            className={`nav-item ${pathname === item.link ? "active" : ""}`}
+            onClick={() => {
+              if (pathname !== item.link) {
+                handleClick(item.link);
+              }
+            }}
+          >
+            {item.icon}
+            <Link href={item.link}>{item.title}</Link>
+          </li>
+        ))}
       </ul>
-      <div className="signout">
+      <button 
+        className="signout" 
+        onClick={handleSignOut} 
+        disabled={isSigningOut}
+      >
         {logout}
-        <SignOutButton redirectUrl={"/sign-in"} />
-      </div>
-    </SidebarStyles>
+        <span>{isSigningOut ? 'Signing Out...' : 'Sign Out'}</span>
+      </button>
+    </SidebarStyled>
   );
 }
 
-const SidebarStyles = styled.nav<{ collapsed : boolean}>`
+const SidebarStyled = styled.nav<{ collapsed: boolean }>`
   width: ${(props) => props.theme.sidebarWidth};
   background: ${(props) => props.theme.colorBg2};
   border: 2px solid ${(props) => props.theme.borderColor2};
   color: ${(props) => props.theme.colorGrey3};
+  display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  transtion: all 0.3s ease-in-out;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.53, 0.21, 0, 1);
 
   @media screen and (max-width: 768px) {
     position: fixed;
     height: calc(100vh - 2rem);
-    padding: 0.2rem;
-    gap: 0.3rem;
-    z-index:10;
-    transition: all 0.3s cubic-bezier(0.53, 0.21, 0, 1);
+    z-index: 100;
     transform: ${(props) =>
       props.collapsed ? "translateX(-107%)" : "translateX(0)"};
 
@@ -99,10 +119,10 @@ const SidebarStyles = styled.nav<{ collapsed : boolean}>`
 
   .toggle-nav {
     display: none;
+    padding: 0.8rem 0.9rem;
     position: absolute;
-    left: 14rem;
-    padding: 0.5rem 0.8rem;
-    margin: 1rem 0.9rem;
+    right: -69px;
+    top: 1.8rem;
 
     border-top-right-radius: 1rem;
     border-bottom-right-radius: 1rem;
@@ -114,15 +134,24 @@ const SidebarStyles = styled.nav<{ collapsed : boolean}>`
   }
 
   .user-btn {
-    .cl-rootBox {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .cl-userButtonBox {
       width: 100%;
       height: 100%;
+    }
 
-      button {
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-      }
+    .cl-userButtonTrigger {
+      width: 100%;
+      height: 100%;
+      opacity: 0;
     }
   }
 
@@ -130,16 +159,10 @@ const SidebarStyles = styled.nav<{ collapsed : boolean}>`
     margin: 1.5rem;
     padding: 1rem 0.8rem;
     position: relative;
-
     border-radius: 1rem;
     cursor: pointer;
-
     font-weight: 500;
     color: ${(props) => props.theme.colorGrey0};
-
-    width: 95%;
-    justify-content: center;
-
     display: flex;
     align-items: center;
 
@@ -155,7 +178,6 @@ const SidebarStyles = styled.nav<{ collapsed : boolean}>`
       transition: all 0.55s linear;
       border-radius: 1rem;
       border: 2px solid ${(props) => props.theme.borderColor2};
-
       opacity: 0.2;
     }
 
@@ -163,7 +185,6 @@ const SidebarStyles = styled.nav<{ collapsed : boolean}>`
       font-size: 1.2rem;
       display: flex;
       flex-direction: column;
-
       line-height: 1.4rem;
     }
 
@@ -179,7 +200,6 @@ const SidebarStyles = styled.nav<{ collapsed : boolean}>`
       overflow: hidden;
       transition: all 0.5s ease;
       border-radius: 100%;
-
       width: 70px;
       height: 70px;
 
@@ -190,7 +210,7 @@ const SidebarStyles = styled.nav<{ collapsed : boolean}>`
     }
 
     > h1 {
-      margin-left: 0.3rem;
+      margin-left: 0.8rem;
       font-size: clamp(1.2rem, 4vw, 1.4rem);
       line-height: 100%;
     }
@@ -207,9 +227,6 @@ const SidebarStyles = styled.nav<{ collapsed : boolean}>`
     }
   }
 
-  .nav-items {
-    width: 100%;
-  }
   .nav-item {
     position: relative;
     padding: 0.8rem 1rem 0.9rem 2.1rem;
@@ -263,6 +280,7 @@ const SidebarStyles = styled.nav<{ collapsed : boolean}>`
       }
     }
   }
+
   .active {
     background-color: ${(props) => props.theme.activeNavLink};
 
@@ -280,38 +298,37 @@ const SidebarStyles = styled.nav<{ collapsed : boolean}>`
     margin: 1.5rem;
   }
 
-  border-radius: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2.5rem;
-
   .signout {
     display: flex;
-    padding: 1rem;
-
-    position: relative;
     align-items: center;
-
-    color: ${(props) => props.theme.colorGrey2};
-    z-index: 5;
+    gap: 1rem;
     cursor: pointer;
-
-    transition: all 0.55s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    padding: 1rem;
+    padding-left: 2.1rem;
+    margin: 1.5rem 0;
+    color: ${(props) => props.theme.colorGrey3};
+    background: transparent;
+    border: none;
+    width: 100%;
 
     i {
-      padding-top: 0.2rem;
-      margin-right: 0.5rem;
-      color: ${(props) => props.theme.colorGrey2};
       font-size: 1.5rem;
-      transition: all 0.55s ease-in-out;
+      color: ${(props) => props.theme.colorIcons};
     }
 
     &:hover {
-      color: ${(props) => props.theme.colorGrey0};
+      background-color: ${(props) => props.theme.colorGreenDark};
+      color: ${(props) => props.theme.colorWhite};
+
       i {
-        color: ${(props) => props.theme.colorGrey0};
+        color: ${(props) => props.theme.colorWhite};
       }
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   }
 `;
