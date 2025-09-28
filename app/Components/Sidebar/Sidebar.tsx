@@ -161,6 +161,8 @@ const SidebarStyled = styled.nav<{ $collapsed: boolean }>`
     color: ${(props) => props.theme.colorGrey0};
     display: flex;
     align-items: center;
+    min-width: 0;
+    overflow: hidden;
 
     .profile-overlay {
       position: absolute;
@@ -206,7 +208,7 @@ const SidebarStyled = styled.nav<{ $collapsed: boolean }>`
     }
 
     > h1 {
-      margin-left: 0.8rem;
+      margin-left: 0.5rem;
       font-size: clamp(1.2rem, 4vw, 1.4rem);
       line-height: 100%;
     }
