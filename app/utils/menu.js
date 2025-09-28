@@ -32,7 +32,7 @@ const menu = [
     link: "/Backlog",
   },
   {
-    id: 5,
+    id: 6,
     title: "Completed",
     icon: check,
     link: "/Completed",
