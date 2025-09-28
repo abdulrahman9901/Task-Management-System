@@ -12,7 +12,7 @@ import { UserButton, useUser, useClerk } from "@clerk/nextjs";
 import { arrowLeft, bars, logout } from '@/app/utils/icons';
 
 function Sidebar() {
-  const { theme, collapsed, collapseMenu } = useGlobalState();
+  const { theme, collapsed, collapseMenu, setIsLoggingOut } = useGlobalState();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -30,18 +30,15 @@ function Sidebar() {
     router.push(link);
   };
 
-  const [isSigningOut, setIsSigningOut] = useState(false);
-
   const handleSignOut = async () => {
-    setIsSigningOut(true);
+    setIsLoggingOut(true);
     try {
       await signOut();
       // Immediately redirect to sign-in page
       router.push('/sign-in');
     } catch (error) {
       console.error('Sign out error:', error);
-    } finally {
-      setIsSigningOut(false);
+      setIsLoggingOut(false);
     }
   };
 
@@ -50,7 +47,7 @@ function Sidebar() {
   }
 
   return (
-    <SidebarStyled theme={theme} collapsed={collapsed}>
+    <SidebarStyled theme={theme} $collapsed={collapsed}>
       <button className="toggle-nav" onClick={collapseMenu}>
         {collapsed ? bars : arrowLeft}
       </button>
@@ -84,17 +81,16 @@ function Sidebar() {
       </ul>
       <button 
         className="signout" 
-        onClick={handleSignOut} 
-        disabled={isSigningOut}
+        onClick={handleSignOut}
       >
         {logout}
-        <span>{isSigningOut ? 'Signing Out...' : 'Sign Out'}</span>
+        <span>Sign Out</span>
       </button>
     </SidebarStyled>
   );
 }
 
-const SidebarStyled = styled.nav<{ collapsed: boolean }>`
+const SidebarStyled = styled.nav<{ $collapsed: boolean }>`
   width: ${(props) => props.theme.sidebarWidth};
   background: ${(props) => props.theme.colorBg2};
   border: 2px solid ${(props) => props.theme.borderColor2};
@@ -110,7 +106,7 @@ const SidebarStyled = styled.nav<{ collapsed: boolean }>`
     height: calc(100vh - 2rem);
     z-index: 100;
     transform: ${(props) =>
-      props.collapsed ? "translateX(-107%)" : "translateX(0)"};
+      props.$collapsed ? "translateX(-107%)" : "translateX(0)"};
 
     .toggle-nav {
       display: block !important;
