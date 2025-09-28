@@ -18,6 +18,7 @@ export const GlobalProvider = ({ children }) => {
   const [editModal, setEditModal] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
   const [inTask, setInTask] = useState(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const theme = themes[selectedTheme];
 
@@ -140,6 +141,8 @@ const updateTask = async (updatedTask) => {
         editModal,
         openEditModal,
         setEditModal,
+        isLoggingOut,
+        setIsLoggingOut,
       }}
     >
       <GlobalUpdateContext.Provider value={{}}>
