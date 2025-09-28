@@ -3,6 +3,7 @@ import { Nunito } from "next/font/google";
 import Sidebar from "./Components/Sidebar/Sidebar";
 import GlobalStylesProviders from "./Providers/GlobalStylesProviders"
 import ContextProvider from './Providers/ContextProvider'
+import LoadingOverlay from './Components/LoadingOverlay/LoadingOverlay'
 import {
   ClerkProvider,
   SignedIn,
@@ -27,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
       <html lang="en">
         <head>
           <link
@@ -45,6 +46,7 @@ export default function RootLayout({
           />
           <GlobalStylesProviders>
             <ContextProvider>
+              <LoadingOverlay />
               <SignedIn>
                 <Sidebar />
               </SignedIn>
